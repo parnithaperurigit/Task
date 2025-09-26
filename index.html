@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DevOps Knowledge Hub</title>
+  <meta name="description" content="Interactive single-file DevOps learning hub: tutorials, quizzes, simulated terminal, and resources." />
+  <style>
+    :root{--bg:#0b1220;--card:#0f1724;--muted:#9aa4b2;--text:#e6eef6;--accent:#6d28d9}
+    [data-theme="light"]{--bg:#f6f8fb;--card:#fff;--muted:#475569;--text:#0b1220}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071025 0%,#0b1220 100%);color:var(--text);min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0ea5a4);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    h1{font-size:18px;margin:0}
+    .subtitle{color:var(--muted);font-size:13px}
+    .container{max-width:1100px;margin:18px auto;padding:0 18px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    nav{display:flex;gap:8px;align-items:center}
+    .btn{background:var(--accent);border:0;color:white;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer}
+    .search{display:flex;gap:8px;align-items:center}
+    input[type=search]{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:8px;color:var(--text);min-width:220px}
+    .left .section{margin-bottom:14px}
+    .tutorials{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .tutorial{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);cursor:pointer}
+    .tutorial h3{margin:0 0 6px 0;font-size:15px}
+    .tutorial p{margin:0;color:var(--muted);font-size:13px}
+    .right .panel{margin-bottom:12px}
+    .resources li{margin-bottom:8px}
+    pre{background:#071127;padding:10px;border-radius:8px;overflow:auto;font-family:monospace;font-size:13px}
+    .terminal{background:#000;border-radius:8px;padding:10px;color:#6df0a1;min-height:140px}
+    .cmdline{display:flex;gap:8px;margin-top:8px}
+    .cmdline input{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+    .quiz-list{display:flex;flex-direction:column;gap:8px}
+    .quiz-item{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);cursor:pointer}
+    footer{grid-column:1 / -1;text-align:center;color:var(--muted);font-size:13px;margin:20px}
+    @media(max-width:980px){.container{grid-template-columns:1fr;padding:8px}.tutorials{grid-template-columns:1fr}}
+  </style>
+</head>
+<body data-theme="dark">
+  <header>
+    <div class="brand">
+      <div class="logo">DH</div>
+      <div>
+        <h1>DevOps Knowledge Hub</h1>
+        <div class="subtitle">Learn DevOps concepts, try quizzes, and play with a simulated terminal</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="search">
+        <input id="search" type="search" placeholder="Search tutorials, tools..." />
+        <button id="toggleTheme" class="ghost">Toggle theme</button>
+      </div>
+      <button id="openQuiz" class="btn">Take a Quiz</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="left">
+      <div class="card section">
+        <h2 style="margin-top:0">Featured Tutorials</h2>
+        <div class="tutorials" id="tutorialGrid">
+          <!-- Tutorials populated by JS -->
+        </div>
+      </div>
+
+      <div class="card section">
+        <h2 style="margin-top:0">Quick CI/CD Cheatsheet</h2>
+        <pre id="cheatsheet"># Example: Basic CI steps
+1. Checkout
+2. Install deps
+3. Run tests
+4. Build artifacts
+5. Deploy
+
+# Common commands
+- docker build -t myapp:latest .
+- kubectl apply -f deployment.yaml
+- terraform init
+</pre>
+      </div>
+
+      <div class="card section">
+        <h2 style="margin-top:0">Simulated Terminal</h2>
+        <div class="terminal" id="terminal">
+          <div id="termOutput">Welcome to DevOps Hub terminal — type <code>help</code> to begin.</div>
+          <div class="cmdline">
+            <input id="cmdInput" placeholder="Enter command (eg. help, docker, deploy, status)" />
+            <button id="runCmd" class="btn small">Run</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <aside class="right">
+      <div class="card panel">
+        <h3 style="margin:0 0 8px 0">Resources</h3>
+        <ul class="resources" id="resources">
+          <li><a href="#" data-url="https://www.terraform.io" style="color:inherit">Terraform — Infrastructure as Code</a></li>
+          <li><a href="#" data-url="https://kubernetes.io" style="color:inherit">Kubernetes Official Docs</a></li>
+          <li><a href="#" data-url="https://prometheus.io" style="color:inherit">Prometheus Monitoring</a></li>
+        </ul>
+        <div style="margin-top:10px">
+          <button id="contributeBtn" class="ghost">Contribute Resource</button>
+        </div>
+      </div>
+
+      <div class="card panel">
+        <h3 style="margin:0 0 8px 0">Mini Quizzes</h3>
+        <div class="quiz-list" id="quizList">
+          <!-- quizzes populated by JS -->
+        </div>
+      </div>
+
+      <div class="card panel">
+        <h3 style="margin:0 0 8px 0">Progress</h3>
+        <div id="progressMsg">You haven't started any tutorial yet.</div>
+      </div>
+    </aside>
+
+    <footer>Made with ❤️ — DevOps Knowledge Hub (single-file demo)</footer>
+  </main>
+
+  <!-- Modals and hidden forms -->
+  <div id="contributeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--card);padding:16px;border-radius:12px;max-width:560px;width:100%">
+      <h3>Add a resource</h3>
+      <p class="subtitle">Share a useful link or short note</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <input id="resTitle" placeholder="Title" />
+        <input id="resUrl" placeholder="https://example.com" />
+        <textarea id="resNote" placeholder="Short note" rows="3"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button id="closeContrib" class="ghost">Cancel</button>
+          <button id="saveContrib" class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quizModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--card);padding:16px;border-radius:12px;max-width:720px;width:100%">
+      <h3 id="quizTitle">Quiz</h3>
+      <div id="quizBody"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="closeQuiz" class="ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Demo tutorials data
+    const tutorials = [
+      {id:'intro',title:'Intro to DevOps',desc:'What is DevOps? Culture, practices, and tools.' ,content:`<h3>Intro to DevOps</h3><p>DevOps is a set of practices that combines software development (Dev) and IT operations (Ops). It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.</p><h4>Key concepts</h4><ul><li>CI/CD</li><li>Automation</li><li>Monitoring & Observability</li><li>Infrastructure as Code</li></ul>`},
+      {id:'ci-cd',title:'CI/CD Basics',desc:'Pipelines, build, test, deploy',content:`<h3>CI/CD Basics</h3><p>Continuous Integration and Continuous Delivery automate building, testing, and deploying apps. A typical pipeline includes: checkout → build → test → package → deploy.</p><h4>Tools</h4><ul><li>Jenkins / GitHub Actions</li><li>Docker</li><li>Kubernetes</li></ul>`},
+      {id:'iac',title:'Infrastructure as Code',desc:'Terraform & IaC patterns',content:`<h3>Infrastructure as Code</h3><p>Use declarative configuration (Terraform, CloudFormation) to provision infrastructure reproducibly.</p><pre>resource "aws_instance" "web" {\n  ami = "ami-12345"\n  instance_type = "t3.micro"\n}</pre>`},
+      {id:'monitoring',title:'Monitoring & Alerts',desc:'Prometheus, Grafana basics',content:`<h3>Monitoring & Alerts</h3><p>Collect metrics and logs. Set SLOs/SLIs and alerting rules to detect incidents quickly.</p>`}
+    ];
+
+    const quizzes = [
+      {id:'q1',title:'DevOps Basics',questions:[
+        {q:'Which practice focuses on automated testing and frequent commits?',opts:['CI','IaC','Observability','Canary deployments'],a:0},
+        {q:'Which tool is used for container orchestration?',opts:['Docker','Kubernetes','Terraform','Jenkins'],a:1}
+      ]},
+      {id:'q2',title:'IaC Quick Quiz',questions:[
+        {q:'Terraform is primarily used for?',opts:['Application testing','Infrastructure provisioning','Log aggregation','CI tool'],a:1}
+      ]}
+    ];
+
+    // Render tutorials
+    const grid = document.getElementById('tutorialGrid');
+    tutorials.forEach(t=>{
+      const el=document.createElement('div');el.className='tutorial';el.tabIndex=0;
+      el.innerHTML=`<h3>${t.title}</h3><p>${t.desc}</p>`;
+      el.addEventListener('click',()=>openTutorial(t));
+      grid.appendChild(el);
+    });
+
+    function openTutorial(t){
+      const modal = document.createElement('div');
+      modal.style.position='fixed';modal.style.inset=0;modal.style.background='rgba(0,0,0,0.6)';modal.style.display='flex';modal.style.alignItems='center';modal.style.justifyContent='center';
+      modal.innerHTML = `<div style="max-width:900px;width:100%;background:var(--card);padding:18px;border-radius:12px;">
+        <div style='display:flex;justify-content:space-between;align-items:center'><h2 style='margin:0'>${t.title}</h2><button id='closeX' class='ghost'>Close</button></div>
+        <div style='margin-top:12px;color:var(--muted)'>${t.content}</div>
+        <div style='display:flex;gap:8px;justify-content:flex-end;margin-top:12px'>
+          <button id='markDone' class='btn'>Mark as read</button>
+        </div>
+      </div>`;
+      document.body.appendChild(modal);
+      modal.querySelector('#closeX').addEventListener('click',()=>modal.remove());
+      modal.querySelector('#markDone').addEventListener('click',()=>{
+        window.localStorage.setItem('devops_read_'+t.id,'true');
+        updateProgress();
+        modal.remove();
+      });
+    }
+
+    // Search
+    document.getElementById('search').addEventListener('input',e=>{
+      const q=e.target.value.toLowerCase();
+      grid.childNodes.forEach((node,i)=>{
+        const t=tutorials[i];
+        node.style.display = (t.title.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)) ? 'block':'none';
+      });
+    });
+
+    // Terminal simulation
+    const termOut = document.getElementById('termOutput');
+    function appendTerm(text){ termOut.innerHTML += '<div style="margin-top:6px">'+text+'</div>'; termOut.scrollTop = termOut.scrollHeight; }
+    document.getElementById('runCmd').addEventListener('click',runCmd);
+    document.getElementById('cmdInput').addEventListener('keydown',e=>{ if(e.key==='Enter') runCmd(); });
+    function runCmd(){
+      const input = document.getElementById('cmdInput'); const cmd = input.value.trim(); if(!cmd) return; appendTerm('<span style="color:#fff">$ '+escapeHtml(cmd)+'</span>');
+      // simple simulated commands
+      if(cmd==='help') appendTerm('Available: help, status, docker, deploy, rollback, clear');
+      else if(cmd==='status') appendTerm('All services: 3 running, 0 crashed');
+      else if(cmd==='docker') appendTerm('Docker daemon simulated. Images: myapp:latest');
+      else if(cmd==='deploy') appendTerm('Starting deployment...\nBuild succeeded. Deploying to cluster...\nDeployment complete ✔️');
+      else if(cmd==='rollback') appendTerm('Rolling back to previous stable revision...\nRollback complete');
+      else if(cmd==='clear'){ termOut.innerHTML='Terminal cleared.' }
+      else appendTerm('Command not found: '+escapeHtml(cmd)+' (try help)');
+      input.value='';
+    }
+    function escapeHtml(str){ return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Progress
+    function updateProgress(){
+      const read = tutorials.filter(t=>window.localStorage.getItem('devops_read_'+t.id));
+      const el = document.getElementById('progressMsg');
+      if(read.length===0) el.textContent = 'You have not started any tutorial yet.';
+      else el.textContent = `Completed ${read.length} of ${tutorials.length} tutorials: ` + read.map(r=>r.replace('devops_read_','')).join(', ');
+    }
+    updateProgress();
+
+    // Resources contribution
+    const contribModal = document.getElementById('contributeModal');
+    document.getElementById('contributeBtn').addEventListener('click',()=>contribModal.style.display='flex');
+    document.getElementById('closeContrib').addEventListener('click',()=>contribModal.style.display='none');
+    document.getElementById('saveContrib').addEventListener('click',()=>{
+      const title=document.getElementById('resTitle').value.trim(); const url=document.getElementById('resUrl').value.trim(); const note=document.getElementById('resNote').value.trim();
+      if(!title||!url){ alert('Please provide title and URL'); return; }
+      const ul = document.getElementById('resources');
+      const li = document.createElement('li'); li.innerHTML = `<a href='${url}' target='_blank' style='color:inherit'>${title}</a> — <span style='color:var(--muted)'>${note}</span>`;
+      ul.appendChild(li);
+      contribModal.style.display='none'; document.getElementById('resTitle').value='';document.getElementById('resUrl').value='';document.getElementById('resNote').value='';
+    });
+
+    // Quizzes
+    const quizList = document.getElementById('quizList');
+    quizzes.forEach(q=>{
+      const el=document.createElement('div');el.className='quiz-item';el.innerHTML=`<strong>${q.title}</strong>`;
+      el.addEventListener('click',()=>openQuiz(q));quizList.appendChild(el);
+    });
+
+    document.getElementById('openQuiz').addEventListener('click',()=>openQuiz(quizzes[0]));
+    function openQuiz(q){
+      const modal = document.getElementById('quizModal'); modal.style.display='flex'; document.getElementById('quizTitle').textContent=q.title;
+      const body = document.getElementById('quizBody'); body.innerHTML='';
+      q.questions.forEach((qq,idx)=>{
+        const qDiv = document.createElement('div'); qDiv.style.marginBottom='10px';
+        qDiv.innerHTML = `<div style='font-weight:700'>${idx+1}. ${qq.q}</div>`;
+        qq.opts.forEach((opt,i)=>{
+          const id = `q_${q.id}_${idx}_${i}`;
+          const option = document.createElement('div');
+          option.innerHTML = `<label><input type='radio' name='${q.id}_${idx}' value='${i}' /> ${opt}</label>`;
+          qDiv.appendChild(option);
+        });
+        body.appendChild(qDiv);
+      });
+      const submit = document.createElement('button'); submit.className='btn'; submit.textContent='Submit'; submit.addEventListener('click',()=>{
+        let score=0; q.questions.forEach((qq,idx)=>{ const sel = body.querySelector(`input[name='${q.id}_${idx}']:checked`); if(sel && Number(sel.value)===qq.a) score++; });
+        body.innerHTML = `<div style='font-size:16px'>You scored ${score} / ${q.questions.length}</div>`;
+      });
+      body.appendChild(submit);
+    }
+    document.getElementById('closeQuiz').addEventListener('click',()=>document.getElementById('quizModal').style.display='none');
+
+    // Theme toggle
+    document.getElementById('toggleTheme').addEventListener('click',()=>{
+      const root = document.body; root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+    });
+
+    // Open external resources in new tab (prevent default href #)
+    document.querySelectorAll('[data-url]').forEach(a=>{
+      a.addEventListener('click',e=>{ e.preventDefault(); window.open(a.dataset.url,'_blank'); });
+    });
+
+    // initial small UX polish
+    document.addEventListener('keydown',e=>{ if(e.key==='/' && document.activeElement.tagName!=='INPUT') { e.preventDefault(); document.getElementById('search').focus(); } });
+
+  </script>
+</body>
+</html>
